@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invitation Mariage</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+  margin:0;
+  height:100vh;
+  background:linear-gradient(135deg,#f6efe9,#efe3d5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:'Playfair Display',serif;
+  overflow:hidden;
+}
+
+/* ---------- ENVELOPPE ---------- */
+
+.scene{
+  perspective:1200px;
+}
+
+.envelope{
+  position:relative;
+  width:320px;
+  height:220px;
+  cursor:pointer;
+  transition:transform 1.2s ease;
+}
+
+.envelope.open{
+  transform:translateY(-120px) scale(0.9);
+}
+
+/* Corps */
+.body{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:#f9f4ee;
+  border-radius:6px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
+  z-index:2;
+}
+
+/* Rabat */
+.flap{
+  position:absolute;
+  width:100%;
+  height:120px;
+  background:#efe6dc;
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  transform-origin:top;
+  transition:transform 1.2s ease;
+  z-index:4;
+}
+
+.envelope.open .flap{
+  transform:rotateX(180deg);
+}
+
+/* ---------- MESSAGE INTERIEUR ---------- */
+
+.letter{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%) translateY(40px);
+  width:85%;
+  height:160px;
+  background:white;
+  border-radius:4px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+  opacity:0;
+  z-index:1;
+  transition:all 1.3s ease;
+}
+
+.envelope.open .letter{
+  transform:translateX(-50%) translateY(-140px);
+  opacity:1;
+}
+
+.letter h2{
+  margin:0;
+  font-weight:600;
+}
+
+.letter p{
+  font-size:14px;
+  color:#555;
+}
+
+/* ---------- SCEAU ---------- */
+
+.seal{
+  position:absolute;
+  width:60px;
+  height:60px;
+  background:radial-gradient(circle,#b23a3a,#7a1f1f);
+  border-radius:50%;
+  left:50%;
+  top:70px;
+  transform:translateX(-50%);
+  z-index:5;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:20px;
+  box-shadow:0 5px 12px rgba(0,0,0,0.3);
+  transition:all .6s ease;
+}
+
+.seal.break{
+  transform:translateX(-50%) scale(0) rotate(180deg);
+  opacity:0;
+}
+
+/* ---------- EFFET MAGIQUE ---------- */
+
+.sparkle{
+  position:absolute;
+  width:6px;
+  height:6px;
+  background:white;
+  border-radius:50%;
+  opacity:0;
+  animation:spark 1.5s ease forwards;
+}
+
+@keyframes spark{
+  0%{transform:translateY(0);opacity:1;}
+  100%{transform:translateY(-120px);opacity:0;}
+}
+
+/* ---------- SITE ---------- */
+
+#siteContainer{
+  position:fixed;
+  inset:0;
+  background:white;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 1.5s ease;
+}
+
+#siteContainer.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+  border:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+  <div class="envelope" id="envelope">
+
+    <div class="flap"></div>
+    <div class="body"></div>
+
+    <div class="letter">
+      <h2>Françoise & David</h2>
+      <p>
+        Vous êtes invités à célébrer notre amour.<br><br>
+        Cliquez pour découvrir notre univers ✨
+      </p>
+    </div>
+
+    <div class="seal" id="seal">✦</div>
+
+  </div>
+</div>
+
+<!-- SITE REEL -->
+<div id="siteContainer">
+  <iframe src="https://fch-32.github.io/mariage-francoise-david/#rsvp"></iframe>
+</div>
+
+<script>
+
+const envelope = document.getElementById("envelope");
+const seal = document.getElementById("seal");
+const site = document.getElementById("siteContainer");
+
+envelope.addEventListener("click", () => {
+
+  // casse du sceau
+  seal.classList.add("break");
+
+  // étincelles magiques
+  for(let i=0;i<18;i++){
+    const spark=document.createElement("div");
+    spark.className="sparkle";
+    spark.style.left=(150+Math.random()*40-20)+"px";
+    spark.style.top="90px";
+    document.body.appendChild(spark);
+    setTimeout(()=>spark.remove(),1500);
+  }
+
+  // ouverture enveloppe
+  setTimeout(()=>{
+    envelope.classList.add("open");
+  },400);
+
+  // transition vers le site
+  setTimeout(()=>{
+    site.classList.add("show");
+  },2200);
+
+});
+
+</script>
+
+</body>
+</html>
