@@ -384,9 +384,9 @@
 </footer>
 
 <script>
-    // Compte à rebours jusqu'au 23 mai 2026 à 14:15 (heure locale du navigateur)
+    // Compte à rebours JOURS/HEURES/MINUTES jusqu'au 23 mai 2026 à 14:15
     const countdownEl = document.getElementById('countdown');
-    const targetDate = new Date(2026, 4, 23, 14, 15, 0); // mois = 4 pour mai (0 = janvier)
+    const targetDate = new Date(2026, 4, 23, 14, 15, 0);
 
     function updateCountdown() {
         const now = new Date();
@@ -399,22 +399,19 @@
         }
 
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-        countdownEl.innerHTML =
-            "Il reste <strong>" +
-            days + " jours, " +
-            hours + " heures et " +
-            minutes + " minutes</strong> avant le grand jour.";
+        countdownEl.innerHTML = `Il reste <strong>${days} jours, ${hours} heures et ${minutes} minutes</strong> avant le grand jour.`;
     }
 
     updateCountdown();
-    const interval = setInterval(updateCountdown, 60000); // mise à jour chaque minute
+    const interval = setInterval(updateCountdown, 30000); // Toutes les 30 secondes
 </script>
 
 </body>
 </html>
+
 
 
 
