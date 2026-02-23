@@ -401,20 +401,23 @@
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
         const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
 
         countdownEl.innerHTML =
             "Il reste <strong>" +
             days + " jours, " +
-            hours + " heures et " +
-            minutes + " minutes</strong> avant le grand jour.";
+            hours + " heures, " +
+            minutes + " minutes et " +
+            seconds + " secondes</strong> avant le grand jour.";
     }
 
     updateCountdown();
-    const interval = setInterval(updateCountdown, 60000); // mise à jour chaque minute
+    const interval = setInterval(updateCountdown, 10000); // mise à jour toutes les 10 secondes
 </script>
 
 </body>
 </html>
+
 
 
 
