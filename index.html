@@ -10,11 +10,13 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-html, body {
-    max-width: 100vw;
-    overflow-x: hidden; /* Empêche le dézoom sur mobile */
-}
+
+        /* Correction du dézoom sur mobile causé par les pétales qui sortent de l'écran */
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Lora', serif;
             background: #f7f5f2;
@@ -248,23 +250,27 @@ html, body {
         @media (max-width: 768px) {
             nav ul { gap: 1rem; flex-wrap: wrap; }
             .card { padding: 25px 20px; }
-            header { height: 60vh; background-position: 75% center; }
+            header { 
+                height: 60vh; 
+                /* Décalage de l'image de fond pour recentrer les personnes sur mobile */
+                background-position: 75% center;
+            }
         }
         
         .obfuscate {
             display: none !important;
         }
 
-        /* --- ANIMATION SAKURA RÉALISTE (Corrigée pour mobile) --- */
+        /* --- ANIMATION SAKURA RÉALISTE --- */
         #sakura-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100dvh; /* Utilisation de dvh pour s'adapter dynamiquement aux barres de navigation mobiles */
+            height: 100dvh;
             z-index: 9999; 
             pointer-events: none; 
-            overflow: hidden;
+            overflow: hidden; /* Empêche les pétales de dépasser du conteneur */
         }
 
         .sakura-petal {
@@ -455,11 +461,10 @@ html, body {
     // --- SCRIPT MODIFIÉ : Génération réaliste des pétales de Sakura avec correction mobile ---
     function initSakura() {
         const container = document.getElementById('sakura-container');
-        if (!container) return; // Sécurité si le conteneur n'est pas encore prêt
+        if (!container) return;
         
-        container.innerHTML = ''; // Réinitialiser l'animation
+        container.innerHTML = ''; 
         
-        // Moins de pétales sur mobile pour la performance
         const petalCount = window.innerWidth > 768 ? 60 : 35; 
 
         for (let i = 0; i < petalCount; i++) {
@@ -479,28 +484,23 @@ html, body {
             petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
             petal.style.animationDelay = `${delay}s, ${delay}s`;
 
-            // Ajoute une rotation initiale aléatoire pour plus de naturel
             petal.style.transform = `rotate(${Math.random() * 360}deg)`;
 
             container.appendChild(petal);
         }
     }
 
-    // Lancer au chargement de la page
     window.addEventListener('load', initSakura);
     
     // --- CORRECTION DU SCROLL MOBILE ---
-    // Gérer le redimensionnement uniquement si la *largeur* de l'écran change (ex: rotation du téléphone).
-    // Ignore les changements de hauteur dus à l'apparition/disparition de la barre d'adresse lors du scroll.
     let resizeTimer;
     let windowWidth = window.innerWidth;
 
     window.addEventListener('resize', () => {
         if (window.innerWidth === windowWidth) {
-            return; // C'est un simple scroll vertical sur mobile, on ne réinitialise pas les pétales !
+            return; 
         }
         
-        // C'est un vrai redimensionnement (changement d'orientation de l'écran)
         windowWidth = window.innerWidth;
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(initSakura, 300);
@@ -509,26 +509,6 @@ html, body {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
