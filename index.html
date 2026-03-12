@@ -11,10 +11,11 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Correction du dézoom sur mobile causé par les pétales qui sortent de l'écran */
+        /* Correction du dézoom sur mobile */
         html, body {
+            width: 100%;
             max-width: 100vw;
-            overflow-x: hidden;
+            overflow-x: hidden !important; /* Force le blocage horizontal */
         }
 
         body {
@@ -252,7 +253,6 @@
             .card { padding: 25px 20px; }
             header { 
                 height: 60vh; 
-                /* Décalage de l'image de fond pour recentrer les personnes sur mobile */
                 background-position: 75% center;
             }
         }
@@ -261,16 +261,16 @@
             display: none !important;
         }
 
-        /* --- ANIMATION SAKURA RÉALISTE --- */
+        /* --- ANIMATION SAKURA RÉALISTE 100% SÉCURISÉE MOBILE --- */
         #sakura-container {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
+            width: 100vw;
             height: 100dvh;
             z-index: 9999; 
             pointer-events: none; 
-            overflow: hidden; /* Empêche les pétales de dépasser du conteneur */
+            overflow: hidden !important; /* Coupe net tout pétale essayant de sortir */
         }
 
         .sakura-petal {
@@ -280,19 +280,24 @@
             background: linear-gradient(135deg, #fce4ec, #f8bbd0);
             box-shadow: 0 0 4px rgba(255, 182, 193, 0.4);
             opacity: 0.8;
-            animation: fall linear infinite, sway ease-in-out infinite alternate;
+            /* Une seule animation combinée, plus de risque de conflit de translation */
+            animation: fall linear infinite;
         }
 
         @keyframes fall {
-            0% { top: -10%; opacity: 0; }
+            0% { 
+                top: -10%; 
+                opacity: 0; 
+                transform: translateX(0) rotate(0deg); 
+            }
             10% { opacity: 0.8; }
             80% { opacity: 0.8; }
-            100% { top: 110%; opacity: 0; }
-        }
-
-        @keyframes sway {
-            0% { transform: translateX(0) rotate(0deg); }
-            100% { transform: translateX(40px) rotate(180deg); }
+            100% { 
+                top: 110%; 
+                opacity: 0; 
+                /* Mouvement horizontal limité pour ne jamais forcer un scroll */
+                transform: translateX(5vw) rotate(360deg); 
+            }
         }
     </style>
 </head>
@@ -458,7 +463,7 @@
     updateCountdown();
     const interval = setInterval(updateCountdown, 30000); 
 
-    // --- SCRIPT MODIFIÉ : Génération réaliste des pétales de Sakura avec correction mobile ---
+    // --- SCRIPT MODIFIÉ : Sécurisation mathématique de l'apparition des pétales ---
     function initSakura() {
         const container = document.getElementById('sakura-container');
         if (!container) return;
@@ -472,17 +477,22 @@
             petal.className = 'sakura-petal';
 
             const size = Math.random() * 8 + 6; 
-            const leftPosition = Math.random() * 100; 
+            
+            // LA CORRECTION CRUCIALE : 
+            // On limite l'apparition à 90vw max pour qu'avec le vent (5vw), le pétale ne dépasse jamais 95vw.
+            // Ainsi, aucun élément absolu ne touche le bord droit de l'écran, bloquant tout dézoom.
+            const leftPosition = Math.random() * 90; 
+            
             const fallDuration = Math.random() * 12 + 10; 
-            const swayDuration = Math.random() * 4 + 2; 
             const delay = Math.random() * 15; 
 
             petal.style.width = size + 'px';
             petal.style.height = size + 'px';
             petal.style.left = leftPosition + 'vw';
             
-            petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
-            petal.style.animationDelay = `${delay}s, ${delay}s`;
+            // On a supprimé swayDuration car l'oscillation est fusionnée dans l'animation fall
+            petal.style.animationDuration = `${fallDuration}s`;
+            petal.style.animationDelay = `${delay}s`;
 
             petal.style.transform = `rotate(${Math.random() * 360}deg)`;
 
@@ -492,7 +502,7 @@
 
     window.addEventListener('load', initSakura);
     
-    // --- CORRECTION DU SCROLL MOBILE ---
+    // --- GESTION DU REDIMENSIONNEMENT ---
     let resizeTimer;
     let windowWidth = window.innerWidth;
 
@@ -509,6 +519,7 @@
 
 </body>
 </html>
+
 
 
 
