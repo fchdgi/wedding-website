@@ -126,6 +126,8 @@
             padding: 80px 20px;
             max-width: 900px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2; /* Pour que le contenu reste cliquable au-dessus des pétales si besoin */
         }
 
         section h2 {
@@ -169,7 +171,7 @@
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -13px;
+            left: -30px; /* Ajusté pour centrer sur la bordure */
             top: 5px;
             width: 12px;
             height: 12px;
@@ -221,6 +223,8 @@
             text-align: center;
             padding: 40px 20px;
             font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
         }
 
         footer a {
@@ -239,17 +243,60 @@
         }
 
         @media (max-width: 768px) {
-            nav ul { gap: 1rem; }
+            nav ul { gap: 1rem; flex-wrap: wrap; }
             .card { padding: 25px 20px; }
             header { height: 60vh; }
         }
+        
         .obfuscate {
-    display: none !important;
+            display: none !important;
+        }
+
+        /* --- ANIMATION SAKURA RÉALISTE --- */
+        #sakura-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999; /* Les pétales passent par-dessus le contenu */
+            pointer-events: none; /* Empêche les pétales de bloquer les clics sur la page */
+            overflow: hidden;
+        }
+
+        .sakura-petal {
+            position: absolute;
+            top: -10%;
+            /* Forme irrégulière de pétale */
+            border-radius: 15px 0 15px 0;
+            /* Couleur rose pâle avec une touche de burgundy très subtile */
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+            box-shadow: 0 0 4px rgba(255, 182, 193, 0.4);
+            opacity: 0.8;
+            /* Double animation : chute verticale + oscillation horizontale (vent) */
+            animation: fall linear infinite, sway ease-in-out infinite alternate;
+        }
+
+        /* Animation de chute */
+        @keyframes fall {
+            0% { top: -10%; opacity: 0; }
+            10% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        /* Animation d'oscillation (effet vent) */
+        @keyframes sway {
+            0% { transform: translateX(0) rotate(0deg); }
+            100% { transform: translateX(40px) rotate(180deg); }
         }
     </style>
 </head>
 
 <body>
+
+<!-- CONTENEUR DES PÉTALES DE SAKURA -->
+<div id="sakura-container"></div>
 
 <header>
     <div class="hero-content">
@@ -378,13 +425,12 @@
 <footer>
     <p>Avec tout notre amour,<br><strong>Françoise & David</strong></p>
     <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;"> 
-        
         ✉️ <a href="mailto:f&#99;hdgi&#50;30526&#64;&#103;mail.com">f<span class="obfuscate">nospam.</span>chdgi230526<span class="obfuscate">@spam.g</span>mail.com</a>
     </p>
 </footer>
 
 <script>
-    // Compte à rebours JOURS/HEURES/MINUTES jusqu'au 23 mai 2026 à 14:15
+    // --- SCRIPT EXISTANT : Compte à rebours ---
     const countdownEl = document.getElementById('countdown');
     const targetDate = new Date(2026, 4, 23, 14, 15, 0);
 
@@ -394,7 +440,7 @@
 
         if (diff <= 0) {
             countdownEl.innerHTML = "<strong>C'est le grand jour !</strong>";
-            clearInterval(interval);
+            if (typeof interval !== 'undefined') clearInterval(interval);
             return;
         }
 
@@ -407,10 +453,54 @@
 
     updateCountdown();
     const interval = setInterval(updateCountdown, 30000); // Toutes les 30 secondes
+
+    // --- NOUVEAU SCRIPT : Génération réaliste des pétales de Sakura ---
+    function initSakura() {
+        const container = document.getElementById('sakura-container');
+        container.innerHTML = ''; // Réinitialiser si on redimensionne l'écran
+        
+        // Moins de pétales sur mobile pour ne pas surcharger votre Poco X7 Pro
+        const petalCount = window.innerWidth > 768 ? 60 : 35; 
+
+        for (let i = 0; i < petalCount; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'sakura-petal';
+
+            // Variabilité réaliste pour chaque pétale
+            const size = Math.random() * 8 + 6; // Taille entre 6px et 14px
+            const leftPosition = Math.random() * 100; // Position de départ sur l'axe X (0 à 100vw)
+            const fallDuration = Math.random() * 12 + 10; // Durée de chute entre 10s et 22s
+            const swayDuration = Math.random() * 4 + 2; // Vitesse du vent (oscillation) entre 2s et 6s
+            const delay = Math.random() * 15; // Délai avant apparition (0 à 15s) pour fluidité
+
+            // Application des styles aléatoires
+            petal.style.width = size + 'px';
+            petal.style.height = size + 'px';
+            petal.style.left = leftPosition + 'vw';
+            
+            // Appliquer les durées d'animation (chute, vent)
+            petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
+            petal.style.animationDelay = `${delay}s, ${delay}s`;
+
+            container.appendChild(petal);
+        }
+    }
+
+    // Lancer au chargement de la page
+    window.addEventListener('load', initSakura);
+    
+    // Gérer le redimensionnement de la fenêtre pour éviter les bugs d'affichage
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(initSakura, 300);
+    });
 </script>
 
 </body>
 </html>
+
+
 
 
 
