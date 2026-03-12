@@ -138,16 +138,21 @@
 
         nav a:hover::after { width: 100%; }
 
-        /* --- MENU DÉROULANT (DROPDOWN) --- */
+        /* --- MENU DÉROULANT (DROPDOWN AU CLIC) --- */
         .dropdown {
             position: relative;
             display: inline-block;
         }
 
+        /* Pour pointer que c'est cliquable */
+        .dropbtn {
+            cursor: pointer;
+        }
+
         .dropdown-content {
-            display: none; 
+            display: none; /* Toujours caché par défaut */
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.98);
             min-width: 180px;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
             border-radius: 8px;
@@ -160,7 +165,13 @@
             left: 50%;
         }
 
-        /* Petite flèche blanche vers le haut */
+        /* Classe ajoutée via JS pour forcer l'affichage */
+        .dropdown-content.show {
+            display: block;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
         .dropdown-content::before {
             content: '';
             position: absolute;
@@ -169,7 +180,7 @@
             margin-left: -6px;
             border-width: 0 6px 6px 6px;
             border-style: solid;
-            border-color: transparent transparent rgba(255, 255, 255, 0.95) transparent;
+            border-color: transparent transparent rgba(255, 255, 255, 0.98) transparent;
         }
 
         .dropdown-content a {
@@ -180,7 +191,7 @@
             text-align: center;
             font-size: 0.95rem;
             border-bottom: 1px solid rgba(128,0,32,0.05);
-            font-weight: 400; /* Moins gras que les liens principaux */
+            font-weight: 400; 
         }
 
         .dropdown-content a:last-child { border-bottom: none; border-radius: 0 0 8px 8px; }
@@ -191,15 +202,7 @@
             color: #800020;
         }
 
-        /* Enlever la ligne de survol sous les liens du menu déroulant */
         .dropdown-content a::after { display: none; }
-
-        /* Affichage au survol */
-        .dropdown:hover .dropdown-content {
-            display: block;
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
 
         /* --- BOUTON RSVP DANS LA NAV --- */
         nav a.nav-btn {
@@ -316,6 +319,41 @@
             display: block;
         }
 
+        /* --- BOUTON MUSIQUE FLOTTANT --- */
+        .music-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(128,0,32,0.2);
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+            background-color: #ffffff;
+        }
+        
+        .music-playing {
+            animation: pulse-music 2s infinite;
+        }
+
+        @keyframes pulse-music {
+            0% { box-shadow: 0 0 0 0 rgba(128, 0, 32, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(128, 0, 32, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(128, 0, 32, 0); }
+        }
+
         /* --- FOOTER --- */
         footer {
             background: linear-gradient(135deg, #5a4a3e, #800020);
@@ -354,14 +392,14 @@
             .form-container iframe {
                 height: 1100px; 
             }
-            /* Sur mobile, on décale un peu le menu déroulant pour qu'il ne sorte pas de l'écran s'il est au bord */
+            /* Décalage du dropdown sur mobile pour éviter qu'il déborde */
             .dropdown-content {
                 transform: translateX(-20%) translateY(10px);
             }
             .dropdown-content::before {
                 left: 20%;
             }
-            .dropdown:hover .dropdown-content {
+            .dropdown-content.show {
                 transform: translateX(-20%) translateY(0);
             }
         }
@@ -370,25 +408,17 @@
             display: none !important;
         }
 
-        /* --- ANIMATION SAKURA RÉALISTE --- */
+        /* --- ANIMATION SAKURA --- */
         #sakura-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100dvh;
-            z-index: 9999; 
-            pointer-events: none; 
-            overflow: hidden !important; 
+            top: 0; left: 0; width: 100vw; height: 100dvh;
+            z-index: 9999; pointer-events: none; overflow: hidden !important; 
         }
 
         .sakura-petal {
-            position: absolute;
-            top: -10%;
-            border-radius: 15px 0 15px 0;
+            position: absolute; top: -10%; border-radius: 15px 0 15px 0;
             background: linear-gradient(135deg, #fce4ec, #f8bbd0);
-            box-shadow: 0 0 4px rgba(255, 182, 193, 0.4);
-            opacity: 0.8;
+            box-shadow: 0 0 4px rgba(255, 182, 193, 0.4); opacity: 0.8;
             animation: fall linear infinite;
         }
 
@@ -423,12 +453,12 @@
     <ul>
         <li><a href="#save-the-date">Save the Date</a></li>
         
-        <!-- NOUVEAU MENU DÉROULANT -->
+        <!-- MENU DÉROULANT -->
         <li class="dropdown">
-            <a href="#infos-pratiques-mairie" class="dropbtn">Lieux & Accès ▾</a>
-            <div class="dropdown-content">
-                <a href="#infos-pratiques-mairie">La Mairie</a>
-                <a href="#infos-pratiques-restaurant">Le Restaurant</a>
+            <a onclick="toggleDropdown(event)" class="dropbtn">Lieux & Accès ▾</a>
+            <div id="lieuxDropdown" class="dropdown-content">
+                <a href="#infos-pratiques-mairie" onclick="closeDropdown()">La Mairie</a>
+                <a href="#infos-pratiques-restaurant" onclick="closeDropdown()">Le Restaurant</a>
             </div>
         </li>
 
@@ -450,175 +480,163 @@
 <section id="infos-pratiques-mairie">
     <div class="card">
         <h2>La Mairie</h2>
-
-        <p><strong>📍 Maison Blanche Marseille</strong><br>
-        150 Bd Paul Claudel, 13009 Marseille</p>
-
+        <p><strong>📍 Maison Blanche Marseille</strong><br>150 Bd Paul Claudel, 13009 Marseille</p>
         <p><strong>Rendez-vous :</strong> 13h00</p>
         <p><strong>Cérémonie :</strong> 14h15</p>
-
-        <a class="btn-map" href="https://maps.google.com/?q=150+Bd+Paul+Claudel+13009+Marseille" target="_blank">
-            Ouvrir dans Google Maps
-        </a>
-
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2905.2252336510182!2d5.413465075839798!3d43.26765697728176!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c9b864e06975b9%3A0xebb3a7d42e38306f!2sMairie%209%2F10!5e0!3m2!1sfr!2sus!4v1769964193955!5m2!1sfr!2sus"
-                width="100%" height="300" style="border:0; border-radius:12px; margin-top:20px;" allowfullscreen loading="lazy"></iframe>
+        <a class="btn-map" href="https://maps.google.com/?q=150+Bd+Paul+Claudel+13009+Marseille" target="_blank">Ouvrir dans Google Maps</a>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2905.2252336510182!2d5.413465075839798!3d43.26765697728176!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c9b864e06975b9%3A0xebb3a7d42e38306f!2sMairie%209%2F10!5e0!3m2!1sfr!2sus!4v1769964193955!5m2!1sfr!2sus" width="100%" height="300" style="border:0; border-radius:12px; margin-top:20px;" allowfullscreen loading="lazy"></iframe>
     </div>
 </section>
 
 <section id="infos-pratiques-restaurant">
     <div class="card">
         <h2>Le Restaurant</h2>
-
-        <p><strong>📍 Hotel du Parc de Saint Pons</strong><br>
-        Vallée St Pons, 13420 Gémenos</p>
-
+        <p><strong>📍 Hotel du Parc de Saint Pons</strong><br>Vallée St Pons, 13420 Gémenos</p>
         <p><strong>Cérémonie laïque :</strong> 16h00</p>
-
-        <a class="btn-map" href="https://maps.google.com/?q=Hotel+du+Parc+Saint+Pons+Gemenos" target="_blank">
-            Ouvrir dans Google Maps
-        </a>
-
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2903.9034358041504!2d5.633935075841245!3d43.29534387550299!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c9a2177caa67bf%3A0xe1ed19c78a2d1cc3!2sLogis%20H%C3%B4tel%20du%20Parc!5e0!3m2!1sfr!2sus!4v1769964646641!5m2!1sfr!2sus"
-                width="100%" height="300" style="border:0; border-radius:12px; margin-top:20px;" allowfullscreen loading="lazy"></iframe>
+        <a class="btn-map" href="https://maps.google.com/?q=Hotel+du+Parc+Saint+Pons+Gemenos" target="_blank">Ouvrir dans Google Maps</a>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2903.9034358041504!2d5.633935075841245!3d43.29534387550299!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c9a2177caa67bf%3A0xe1ed19c78a2d1cc3!2sLogis%20H%C3%B4tel%20du%20Parc!5e0!3m2!1sfr!2sus!4v1769964646641!5m2!1sfr!2sus" width="100%" height="300" style="border:0; border-radius:12px; margin-top:20px;" allowfullscreen loading="lazy"></iframe>
     </div>
 </section>
 
 <section id="planning">
     <div class="card">
         <h2>Programme de la journée</h2>
-
         <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-time">14h15</div>
-                Cérémonie à la Mairie – Maison Blanche
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time">16h00</div>
-                Cérémonie laïque – Hotel du Parc
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time">17h00</div>
-                Vin d'honneur & apéritif
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time">19h30</div>
-                Dîner provençal sous les étoiles
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time">22h00</div>
-                Ouverture de bal & soirée
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time">02h00</div>
-                Fin de la fête
-            </div>
+            <div class="timeline-item"><div class="timeline-time">14h15</div>Cérémonie à la Mairie – Maison Blanche</div>
+            <div class="timeline-item"><div class="timeline-time">16h00</div>Cérémonie laïque – Hotel du Parc</div>
+            <div class="timeline-item"><div class="timeline-time">17h00</div>Vin d'honneur & apéritif</div>
+            <div class="timeline-item"><div class="timeline-time">19h30</div>Dîner provençal sous les étoiles</div>
+            <div class="timeline-item"><div class="timeline-time">22h00</div>Ouverture de bal & soirée</div>
+            <div class="timeline-item"><div class="timeline-time">02h00</div>Fin de la fête</div>
         </div>
-
-        <p style="text-align: center; margin-top: 30px; font-style: italic; color: #7d8b6a;">
-            Thème : Provence Champêtre • Burgundy • Vert Sauge
-        </p>
+        <p style="text-align: center; margin-top: 30px; font-style: italic; color: #7d8b6a;">Thème : Provence Champêtre • Burgundy • Vert Sauge</p>
     </div>
 </section>
 
 <section id="rsvp">
     <div class="card">
         <h2>Confirmation de votre présence</h2>
-
-        <p style="margin-bottom: 20px;">
-            Merci de répondre avant le <strong>30 Mars 2026</strong>.
-        </p>
-
+        <p style="margin-bottom: 20px;">Merci de répondre avant le <strong>30 Mars 2026</strong>.</p>
         <div class="form-container">
-            <iframe src="https://hay2ak8p.forms.app/rsvp-mariage-francoise-david" title="Formulaire de confirmation de présence">
-                Chargement du formulaire...
-            </iframe>
+            <iframe src="https://hay2ak8p.forms.app/rsvp-mariage-francoise-david" title="Formulaire de confirmation de présence">Chargement du formulaire...</iframe>
         </div>
     </div>
 </section>
 
 <footer>
     <p>Avec tout notre amour,<br><strong>Françoise & David</strong></p>
-    <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;"> 
-        ✉️ <a href="mailto:f&#99;hdgi&#50;30526&#64;&#103;mail.com">f<span class="obfuscate">nospam.</span>chdgi230526<span class="obfuscate">@spam.g</span>mail.com</a>
-    </p>
+    <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">✉️ <a href="mailto:f&#99;hdgi&#50;30526&#64;&#103;mail.com">f<span class="obfuscate">nospam.</span>chdgi230526<span class="obfuscate">@spam.g</span>mail.com</a></p>
 </footer>
 
+<!-- LECTEUR AUDIO -->
+<audio id="bg-music" loop>
+    <source src="musiquebox.mp3" type="audio/mpeg">
+</audio>
+<button id="music-btn" class="music-btn" aria-label="Contrôler la musique">🎵</button>
+
 <script>
+    // --- COMPTE A REBOURS ---
     const countdownEl = document.getElementById('countdown');
     const targetDate = new Date(2026, 4, 23, 14, 15, 0);
 
     function updateCountdown() {
         const now = new Date();
         const diff = targetDate - now;
-
         if (diff <= 0) {
             countdownEl.innerHTML = "<strong>C'est le grand jour !</strong>";
             if (typeof interval !== 'undefined') clearInterval(interval);
             return;
         }
-
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
         countdownEl.innerHTML = `Il reste <strong>${days} jours, ${hours} heures et ${minutes} minutes</strong> avant le grand jour.`;
     }
-
     updateCountdown();
     const interval = setInterval(updateCountdown, 30000); 
 
+    // --- SAKURA ---
     function initSakura() {
         const container = document.getElementById('sakura-container');
         if (!container) return;
-        
         container.innerHTML = ''; 
-        
         const petalCount = window.innerWidth > 768 ? 60 : 35; 
-
         for (let i = 0; i < petalCount; i++) {
             const petal = document.createElement('div');
             petal.className = 'sakura-petal';
-
             const size = Math.random() * 8 + 6; 
             const leftPosition = Math.random() * 90; 
             const fallDuration = Math.random() * 12 + 10; 
             const delay = Math.random() * 15; 
-
-            petal.style.width = size + 'px';
-            petal.style.height = size + 'px';
+            petal.style.width = size + 'px'; petal.style.height = size + 'px';
             petal.style.left = leftPosition + 'vw';
-            
-            petal.style.animationDuration = `${fallDuration}s`;
-            petal.style.animationDelay = `${delay}s`;
-
+            petal.style.animationDuration = `${fallDuration}s`; petal.style.animationDelay = `${delay}s`;
             petal.style.transform = `rotate(${Math.random() * 360}deg)`;
-
             container.appendChild(petal);
         }
     }
-
     window.addEventListener('load', initSakura);
-    
-    let resizeTimer;
-    let windowWidth = window.innerWidth;
-
+    let resizeTimer; let windowWidth = window.innerWidth;
     window.addEventListener('resize', () => {
         if (window.innerWidth === windowWidth) return; 
-        
-        windowWidth = window.innerWidth;
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(initSakura, 300);
+        windowWidth = window.innerWidth; clearTimeout(resizeTimer); resizeTimer = setTimeout(initSakura, 300);
     });
+
+    // --- MENU DÉROULANT AU CLIC ---
+    function toggleDropdown(event) {
+        event.stopPropagation(); // Empêche le clic de fermer immédiatement le menu
+        document.getElementById("lieuxDropdown").classList.toggle("show");
+    }
+
+    // Ferme le menu si on clique sur un lien du menu
+    function closeDropdown() {
+        document.getElementById("lieuxDropdown").classList.remove("show");
+    }
+
+    // Ferme le menu si on clique n'importe où ailleurs sur la page
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+
+    // --- GESTION MUSIQUE ---
+    const musicBtn = document.getElementById('music-btn');
+    const bgMusic = document.getElementById('bg-music');
+    let isPlaying = false;
+
+    function toggleMusic(event) {
+        if(event) event.stopPropagation(); // Évite conflit avec le menu
+        if (isPlaying) {
+            bgMusic.pause();
+            musicBtn.innerHTML = '🔇';
+            musicBtn.classList.remove('music-playing');
+        } else {
+            bgMusic.volume = 0.4; // Volume doux
+            bgMusic.play().catch(e => console.log("Lecture bloquée"));
+            musicBtn.innerHTML = '🎵';
+            musicBtn.classList.add('music-playing');
+        }
+        isPlaying = !isPlaying;
+    }
+
+    musicBtn.addEventListener('click', toggleMusic);
+
+    // Lancement auto au 1er clic sur la page
+    document.body.addEventListener('click', function initAudio() {
+        if (!isPlaying) { toggleMusic(); }
+        document.body.removeEventListener('click', initAudio);
+    }, { once: true });
 </script>
 
 </body>
 </html>
-
-
-
-
-
 
 
 
