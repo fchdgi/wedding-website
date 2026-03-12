@@ -38,7 +38,6 @@
             content: '';
             position: absolute;
             inset: 0;
-            /* Opacité réduite et flou léger pour mieux voir l'image */
             background: rgba(255,255,255,0.25); 
             backdrop-filter: blur(2px);
         }
@@ -54,13 +53,11 @@
             animation: fadeIn 1.5s ease-out;
         }
 
-        /* --- TEXTE DU HEADER AVEC HALO LUMINEUX --- */
         .hero-title {
             font-family: 'Playfair Display', serif;
             font-size: clamp(3rem, 7vw, 5rem);
             color: #5a4a3e;
             margin-bottom: 10px;
-            /* Ombre douce pour faire ressortir le texte sans l'alourdir */
             text-shadow: 0 2px 15px rgba(255, 255, 255, 0.8), 
                          0 0 5px rgba(255, 255, 255, 0.5);
         }
@@ -100,6 +97,7 @@
             color: #800020;
         }
 
+        /* --- NAVIGATION --- */
         nav {
             background: rgba(255,255,255,0.9);
             backdrop-filter: blur(10px);
@@ -115,6 +113,7 @@
             display: flex;
             gap: 2rem;
             justify-content: center;
+            align-items: center; 
         }
 
         nav a {
@@ -139,6 +138,88 @@
 
         nav a:hover::after { width: 100%; }
 
+        /* --- MENU DÉROULANT (DROPDOWN) --- */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none; 
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.95);
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(128,0,32,0.1);
+            z-index: 101;
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px); 
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            margin-top: 10px;
+            left: 50%;
+        }
+
+        /* Petite flèche blanche vers le haut */
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 0 6px 6px 6px;
+            border-style: solid;
+            border-color: transparent transparent rgba(255, 255, 255, 0.95) transparent;
+        }
+
+        .dropdown-content a {
+            color: #5a4a3e;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(128,0,32,0.05);
+            font-weight: 400; /* Moins gras que les liens principaux */
+        }
+
+        .dropdown-content a:last-child { border-bottom: none; border-radius: 0 0 8px 8px; }
+        .dropdown-content a:first-child { border-radius: 8px 8px 0 0; }
+
+        .dropdown-content a:hover {
+            background-color: rgba(128,0,32,0.05);
+            color: #800020;
+        }
+
+        /* Enlever la ligne de survol sous les liens du menu déroulant */
+        .dropdown-content a::after { display: none; }
+
+        /* Affichage au survol */
+        .dropdown:hover .dropdown-content {
+            display: block;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- BOUTON RSVP DANS LA NAV --- */
+        nav a.nav-btn {
+            background-color: #800020;
+            color: #ffffff;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        nav a.nav-btn:hover {
+            background-color: #5a0018; 
+            color: #ffffff;
+            transform: translateY(-2px); 
+        }
+
+        nav a.nav-btn::after { display: none; }
+
+        /* --- SECTIONS --- */
         section {
             padding: 80px 20px;
             max-width: 900px;
@@ -174,6 +255,7 @@
             opacity: 0;
         }
 
+        /* --- TIMELINE --- */
         .timeline {
             border-left: 3px solid #800020;
             padding-left: 25px;
@@ -203,6 +285,7 @@
             margin-bottom: 5px;
         }
 
+        /* --- BOUTONS GOOGLE MAPS --- */
         .btn-map {
             display: inline-block;
             margin-top: 15px;
@@ -217,6 +300,7 @@
 
         .btn-map:hover { background: #5a0018; }
 
+        /* --- FORMULAIRE RSVP --- */
         .form-container {
             width: 100%;
             border-radius: 12px;
@@ -232,6 +316,7 @@
             display: block;
         }
 
+        /* --- FOOTER --- */
         footer {
             background: linear-gradient(135deg, #5a4a3e, #800020);
             color: #f8f4f0;
@@ -257,6 +342,7 @@
             to { opacity: 1; }
         }
 
+        /* --- RESPONSIVE MOBILE --- */
         @media (max-width: 768px) {
             nav ul { gap: 1rem; flex-wrap: wrap; }
             .card { padding: 25px 20px; }
@@ -268,13 +354,23 @@
             .form-container iframe {
                 height: 1100px; 
             }
+            /* Sur mobile, on décale un peu le menu déroulant pour qu'il ne sorte pas de l'écran s'il est au bord */
+            .dropdown-content {
+                transform: translateX(-20%) translateY(10px);
+            }
+            .dropdown-content::before {
+                left: 20%;
+            }
+            .dropdown:hover .dropdown-content {
+                transform: translateX(-20%) translateY(0);
+            }
         }
         
         .obfuscate {
             display: none !important;
         }
 
-        /* --- ANIMATION SAKURA RÉALISTE SÉCURISÉE MOBILE --- */
+        /* --- ANIMATION SAKURA RÉALISTE --- */
         #sakura-container {
             position: fixed;
             top: 0;
@@ -297,18 +393,10 @@
         }
 
         @keyframes fall {
-            0% { 
-                top: -10%; 
-                opacity: 0; 
-                transform: translateX(0) rotate(0deg); 
-            }
+            0% { top: -10%; opacity: 0; transform: translateX(0) rotate(0deg); }
             10% { opacity: 0.8; }
             80% { opacity: 0.8; }
-            100% { 
-                top: 110%; 
-                opacity: 0; 
-                transform: translateX(5vw) rotate(360deg); 
-            }
+            100% { top: 110%; opacity: 0; transform: translateX(5vw) rotate(360deg); }
         }
     </style>
 </head>
@@ -321,7 +409,7 @@
     <div class="hero-content">
         <div class="hero-title">Françoise & David</div>
         <div class="hero-date">Samedi 23 Mai 2026</div>
-        
+        <div class="hero-location">Hotel du Parc de Saint Pons – Gémenos</div>
     </div>
 </header>
 
@@ -334,9 +422,18 @@
 <nav>
     <ul>
         <li><a href="#save-the-date">Save the Date</a></li>
-        <li><a href="#infos-pratiques-mairie">Lieux & Accès</a></li>
+        
+        <!-- NOUVEAU MENU DÉROULANT -->
+        <li class="dropdown">
+            <a href="#infos-pratiques-mairie" class="dropbtn">Lieux & Accès ▾</a>
+            <div class="dropdown-content">
+                <a href="#infos-pratiques-mairie">La Mairie</a>
+                <a href="#infos-pratiques-restaurant">Le Restaurant</a>
+            </div>
+        </li>
+
         <li><a href="#planning">Programme</a></li>
-        <li><a href="#rsvp">RSVP</a></li>
+        <li><a href="#rsvp" class="nav-btn">RSVP</a></li>
     </ul>
 </nav>
 
@@ -507,9 +604,7 @@
     let windowWidth = window.innerWidth;
 
     window.addEventListener('resize', () => {
-        if (window.innerWidth === windowWidth) {
-            return; 
-        }
+        if (window.innerWidth === windowWidth) return; 
         
         windowWidth = window.innerWidth;
         clearTimeout(resizeTimer);
@@ -519,6 +614,7 @@
 
 </body>
 </html>
+
 
 
 
