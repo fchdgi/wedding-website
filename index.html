@@ -530,9 +530,7 @@
 </footer>
 
 <!-- LECTEUR AUDIO -->
-<audio id="bg-music" loop>
-    <source src="musiquebox.mp3" type="audio/mpeg">
-</audio>
+<audio id="bg-music"></audio>
 <button id="music-btn" class="music-btn" aria-label="Contrôler la musique">🎵</button>
 
 <script>
@@ -608,9 +606,32 @@
     }
 
     // --- GESTION MUSIQUE ---
-    const musicBtn = document.getElementById('music-btn');
+const musicBtn = document.getElementById('music-btn');
     const bgMusic = document.getElementById('bg-music');
     let isPlaying = false;
+
+    // 1. Ajoutez ici les noms de vos fichiers MP3
+    const playlist = [
+        "Star tea party.mp3",
+        "chanson2.mp3",
+        "chanson3.mp3"
+    ];
+    let currentTrack = 0;
+
+    // Charger la première musique de la liste au démarrage
+    bgMusic.src = playlist[currentTrack];
+    bgMusic.volume = 0.4; // Volume doux
+
+    // 2. Passer automatiquement à la musique suivante quand une se termine
+    bgMusic.addEventListener('ended', () => {
+        currentTrack++;
+        // Si on arrive à la fin de la liste, on recommence à la première (boucle)
+        if (currentTrack >= playlist.length) {
+            currentTrack = 0; 
+        }
+        bgMusic.src = playlist[currentTrack];
+        bgMusic.play().catch(e => console.log("Lecture bloquée"));
+    });
 
     function toggleMusic(event) {
         if(event) event.stopPropagation(); // Évite conflit avec le menu
@@ -619,7 +640,6 @@
             musicBtn.innerHTML = '🔇';
             musicBtn.classList.remove('music-playing');
         } else {
-            bgMusic.volume = 0.4; // Volume doux
             bgMusic.play().catch(e => console.log("Lecture bloquée"));
             musicBtn.innerHTML = '🎵';
             musicBtn.classList.add('music-playing');
